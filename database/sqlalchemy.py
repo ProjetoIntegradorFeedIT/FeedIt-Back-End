@@ -65,7 +65,7 @@ class Pet(Base):
     id_pet = Column(Integer, primary_key=True, autoincrement=True)
     id_crianca = Column(Integer, ForeignKey('criancas.id_crianca'))
     nome_pet = Column(String(100), nullable=False)
-    tipo_pet = Column(String(3), nullable=False)
+    tipo_pet = Column(String(10), nullable=False)
     alimentacao = Column(Float, default=0)
     energia = Column(Float, default=0)
     felicidade = Column(Float, default=0)
@@ -83,6 +83,7 @@ class Personalizacao(Base):
     url_img = Column(String(255), nullable=False, unique=True)
     tipo_perso = Column(String(6), nullable=False)
     preco = Column(Integer)
+    tipo_pet = Column(String(10), nullable=False)
 
 class PersonalizacaoPet(Base):
     __tablename__ = 'personalizacao_pets'
