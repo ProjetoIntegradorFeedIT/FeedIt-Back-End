@@ -14,11 +14,10 @@ load_dotenv()
 connect = os.getenv("CONNECT")
 
 # Importando o caminho do certificado
-caminho = './database/ca.pem'
-caminho_completo = os.path.abspath(os.path.join(os.getcwd(), caminho))
+caminho = os.path.abspath(os.path.join(os.getcwd(), './database/ca.pem'))
 
 # Conexão
-engine = create_engine(connect, echo=True, connect_args={'ssl': {'ca': caminho_completo}})
+engine = create_engine(connect, echo=True, connect_args={'ssl': {'ca': caminho}})
 # engine.execute(...)
 
 # Sessão
