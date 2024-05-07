@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 # Import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Personalizacao, Crianca, Pet
+from database.sqlalchemy import Personalizacao, Crianca, Pet, Missao
 
 # Router
 router = APIRouter(
@@ -63,3 +63,29 @@ async def mostrar_status(id_pet: int):
         session.close()
 
 # Pega as missões do Pet da Criança
+@router.get("/mostrar_missoes/{id_crianca}")
+async def mostrar_missoes(id_crianca: int):
+    session = Conexao().session
+    try:
+        crianca = session.query(Crianca).filter(Crianca.id_crianca == id_crianca).first()
+        tarefas = crianca.tarefas
+        tarefas_dict = []
+        for tarefa in tarefas:
+            missao = session.query(Missao).filter(Missao.id_missao == tarefa.id_missao).first()
+            tarefa_dict = {
+                "id_tarefa": tarefa.id_tarefa,
+                "id_missao": tarefa.id_missao,
+                "tipo_missao": missao.tipo_missao,
+                "nome_missao": missao.nome_missao,
+                "valor": missao.valor,
+                "tamanho": missao.tamanho,
+                "progresso_tarefa": tarefa.progresso_tarefa,
+                "created_at": tarefa.created_at,
+                "prazo": tarefa.prazo
+            }
+            tarefas_dict.append(tarefa_dict)
+        return JSONResponse(content={"message": "Missões encontradas.", "tarefas": tarefas_dict})
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao buscar as missões.", "error": str(e)})
+    finally:
+        session.close()
