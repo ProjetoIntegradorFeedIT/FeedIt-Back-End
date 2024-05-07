@@ -2,7 +2,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, ForeignKey, Integer, String, Float, TIMESTAMP
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, TIMESTAMP, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -125,6 +125,24 @@ class Token(Base):
     cod = Column(String(5), nullable=False)
     created_at = Column(TIMESTAMP, default='CURRENT_TIMESTAMP')
     deleted_at = Column(TIMESTAMP)
+
+class GrupoComidas(Base):
+    __tablename__ = 'grupo_comidas'
+    id_comida = Column(Integer, primary_key=True)
+    grupo = Column(String(50))
+    pnt_forca = Column(Float)
+    pnt_alimentacao = Column(Float)
+    pnt_felicidade = Column(Float)
+    pnt_energia = Column(Float)
+
+class Status(Base):
+    __tablename__ = 'status'
+    id_alter = Column(Integer, primary_key=True, autoincrement=True)
+    atribuicao = Column(Date)
+    pnt_forca = Column(Float)
+    pnt_alimentacao = Column(Float)
+    pnt_felicidade = Column(Float)
+    pnt_energia = Column(Float)
 
 def cria_tabelas():
     Base.metadata.create_all(engine)
