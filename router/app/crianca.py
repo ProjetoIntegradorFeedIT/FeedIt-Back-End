@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 # Import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Personalizacao, Crianca, Pet
+from database.sqlalchemy import Personalizacao, Crianca, Pet, CriancaMissao, Missao
 
 # Router
 router = APIRouter(
@@ -22,6 +22,8 @@ async def listar_personalizacao():
     try:
         personalizacoes = session.query(Personalizacao).all()
         return personalizacoes
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao listar personalizações!", "error": str(e)})
     finally:
         session.close()
 
@@ -40,6 +42,8 @@ async def salvar_personalizacao(request: Request):
 
         session.commit()
         return JSONResponse(content={"message": "Personalização do Pet alterada!"})
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao alterar a personalização do Pet!", "error": str(e)})
     finally:
         session.close()
 
@@ -59,7 +63,29 @@ async def mostrar_status(id_pet: int):
             "forca": pet.forca
         }
         return JSONResponse(content={"message": "Status do Pet encontrado.", "pet": pet_dict})
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao encontrar o status do Pet!", "error": str(e)})
     finally:
         session.close()
 
 # Pega as missões do Pet da Criança
+@router.get("/missao_pet/{id_crianca}")
+async def missao_pet(id_crianca: int):
+    session = Conexao().session
+    try:
+        missao = session.query(CriancaMissao).filter(CriancaMissao.id_crianca == id_crianca).all()
+        dict_missao = {}
+        for m in missao:
+            select = session.query(Missao).filter(Missao.id_missao == m.id_missao).first()
+            dict_missao[select.nome_missao] = {
+                "tipo_missao": select.tipo_missao,
+                "nome_missao": select.nome_missao,
+                "valor": select.valor,
+                "tamanho": select.tamanho,
+                "progresso_tarefa": m.progresso_tarefa,
+            }
+        return dict_missao
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao encontrar as missões do Pet!", "error": str(e)})
+    finally:
+        session.close()
