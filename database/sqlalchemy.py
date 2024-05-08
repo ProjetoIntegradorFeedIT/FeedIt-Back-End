@@ -6,6 +6,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String, Float, TIMESTAMP, Da
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import func
 
 # Importando o dotenv para pegar a string de conexão
 import os
@@ -69,7 +70,7 @@ class Pet(Base):
     energia = Column(Float, default=0)
     felicidade = Column(Float, default=0)
     forca = Column(Float, default=0)
-    alteracao = Column(TIMESTAMP, default='CURRENT_TIMESTAMP', onupdate='CURRENT_TIMESTAMP')
+    alteracao = Column(TIMESTAMP, default=func.current_timestamp(), onupdate=func.current_timestamp())
     chapeu = Column(Integer, default=1)
     roupa = Column(Integer, default=1)
     cor = Column(Integer, default=1)
@@ -110,10 +111,11 @@ class CriancaMissao(Base):
     id_crianca = Column(Integer, ForeignKey('criancas.id_crianca'))
     id_missao = Column(Integer, ForeignKey('missoes.id_missao'))
     progresso_tarefa = Column(Integer)
-    created_at = Column(TIMESTAMP, default='CURRENT_TIMESTAMP')
+    created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
     prazo = Column(TIMESTAMP)
     crianca = relationship("Crianca", back_populates="tarefas")
     missao = relationship("Missao", back_populates="criancas")
+
 
 Crianca.tarefas = relationship("CriancaMissao", back_populates="crianca")
 Missao.criancas = relationship("CriancaMissao", back_populates="missao")
@@ -123,7 +125,7 @@ class Token(Base):
     id_token = Column(Integer, primary_key=True, autoincrement=True)
     token = Column(String(10), nullable=False)
     cod = Column(String(5), nullable=False)
-    created_at = Column(TIMESTAMP, default='CURRENT_TIMESTAMP')
+    created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
     deleted_at = Column(TIMESTAMP)
 
 class GrupoComidas(Base):
