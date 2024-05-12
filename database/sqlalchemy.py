@@ -42,7 +42,7 @@ class Crianca(Base):
     __tablename__ = 'criancas'
     id_crianca = Column(Integer, primary_key=True, autoincrement=True)
     nome_crianca = Column(String(50), nullable=False)
-    senha = Column(String(50), nullable=False)
+    senha = Column(String(200), nullable=False)
     nivel = Column(Integer, default=1)
     xp_atual = Column(Integer, default=0)
     xp_necessario = Column(Integer, default=100)
