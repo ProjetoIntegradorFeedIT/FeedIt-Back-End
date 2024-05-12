@@ -6,7 +6,7 @@ import os
 import hashlib
 # Import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Personalizacao
+from database.sqlalchemy import Usuario
 
 # Router
 router = APIRouter(
@@ -16,11 +16,20 @@ router = APIRouter(
 )
 
 # Função para criptografar a senha
-def criptografar_senha(password, salt=None):
-    if not salt:
-        salt = os.urandom(16)  # Gera um salt aleatório
-    hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000) # Gera um hash da senha - basicamente a criptografia
-    return salt, hash # Retorna o salt e o hash - eles que devem ser armazenados no banco de dados
+def criptografar_senha(senha):
+    # Codificando a senha em bytes
+    senha_bytes = senha.encode('utf-8')
+
+    # Criando um objeto de hash usando o algoritmo SHA-256
+    sha256 = hashlib.sha256()
+
+    # Atualizando o objeto de hash com a senha codificada
+    sha256.update(senha_bytes)
+
+    # Gerando o hash da senha e retornando como hexadecimal
+    senha_hash = sha256.hexdigest()
+    
+    return senha_hash
 
 # Depois remove o comentário
 # O que fazer: Criar uma rota para cadastrar um novo usuário
@@ -36,6 +45,7 @@ def criptografar_senha(password, salt=None):
 async def cadastrar_usuario_responsavel(request: Request):
     session = Conexao().session
     try:
+        data = await request.json()
         # Aqui vem o seu código
         return JSONResponse(content={"message": "Usuário cadastrado com sucesso!"})
     except Exception as e:
