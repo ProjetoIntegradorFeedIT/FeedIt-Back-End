@@ -15,12 +15,6 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# Depois remove o comentário
-# O que fazer: Criar uma rota para a verificação das imagens tiradas
-# Como? - Criar um endpoint POST /verificar que recebe um JSON com a imagem tirada e o id da criança
-# - O JSON deve conter os campos: imagem e id_crianca
-# - Vamos utilizar o ChatGPT para verificar a imagem e retornar um JSON com o status 200 e uma mensagem de sucesso
-# - Se ocorrer algum erro, retornar um JSON com o status 401 e uma mensagem de erro
 @router.post("/verificar")
 async def verificar_imagem(request: Request):
     session = Conexao().session
