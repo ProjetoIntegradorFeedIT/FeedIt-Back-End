@@ -37,7 +37,6 @@ class Usuario(Base):
     nome_user = Column(String(50), nullable=False)
     email = Column(String(200), nullable=False, unique=True)
     senha = Column(String(200), nullable=False)
-    salt = Column(String(200), nullable=False)
 
 class Crianca(Base):
     __tablename__ = 'criancas'
