@@ -15,6 +15,34 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+#Infos da criança
+@router.get("/info_crianca/{id_crianca}")
+async def info_crianca(id_crianca: int):
+    session = Conexao().session
+    try:
+        crianca = session.query(Crianca).filter(Crianca.id_crianca == id_crianca).first()
+        pet = session.query(Pet).filter(Pet.id_crianca == crianca.id_crianca).first()
+        dict_crianca = {
+            "id_crianca": crianca.id_crianca,
+            "nome_crianca": crianca.nome_crianca,
+            "nivel": crianca.nivel,
+            "xp_atual": crianca.xp_atual,
+            "xp_necessario": crianca.xp_necessario,
+            "moedas": crianca.dinheiro,
+            "id_pet": pet.id_pet,
+            "nome_pet": pet.nome_pet,
+            "tipo_pet": pet.tipo_pet,
+            "cor": pet.cor,
+            "chapeu": pet.chapeu,
+            "roupa": pet.roupa,
+            "fundo": pet.fundo,
+        }
+        return JSONResponse(content={"message": "Criança encontrada.", "crianca": dict_crianca})
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao encontrar a criança!", "error": str(e)})
+    finally:
+        session.close()
+
 # Listar todas as personalizações
 @router.get("/listar_personalizacao")
 async def listar_personalizacao():
