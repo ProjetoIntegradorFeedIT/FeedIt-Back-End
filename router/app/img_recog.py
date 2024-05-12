@@ -27,40 +27,40 @@ async def verificar_imagem(request: Request):
     try:
         data = await request.json()
 
-        # client = OpenAI()
+        client = OpenAI()
 
-        # response = client.chat.completions.create(
-        #   model="gpt-4-turbo",
-        #   messages=[
-        #     {
-        #       "role": "user",
-        #       "content": [
-        #         {"type": "text", 
-        #          "text": 
-        #          "Please provide an image of a food item. Upon analysis, the system will return a dictionary with the following structure: dict = {'food': '', 'group': ''} Where: 'food' receives the name of the food contained in the image. And 'group' receives the food group to which this item belongs, and can take one of the following values: Fruits, Vegetables and greens, Meat and eggs, Cereals, tubers, bread and roots, Legumes, Milk and dairy products, Sweets, Snacks, Fungus. If the image is not a food, 'Not a food' will be returned for both key values. I just want you to return me a dictionary already filled"},
-        #         {
-        #           "type": "image_url",
-        #           "image_url": {
-        #             "url": data["imagem"],
-        #           },
-        #         },
-        #       ],
-        #     }
-        #   ],
-        #   max_tokens=100,
-        # )
+        response = client.chat.completions.create(
+          model="gpt-4-turbo",
+          messages=[
+            {
+              "role": "user",
+              "content": [
+                {"type": "text", 
+                 "text": 
+                 "Please provide an image of a food item. Upon analysis, the system will return a dictionary with the following structure: dict = {'food': '', 'group': ''} Where: 'food' receives the name of the food contained in the image. And 'group' receives the food group to which this item belongs, and can take one of the following values: Fruits, Vegetables and greens, Meat and eggs, Cereals, tubers, bread and roots, Legumes, Milk and dairy products, Sweets, Snacks, Fungus. If the image is not a food, 'Not a food' will be returned for both key values. I just want you to return me a dictionary already filled"},
+                {
+                  "type": "image_url",
+                  "image_url": {
+                    "url": data["imagem"],
+                  },
+                },
+              ],
+            }
+          ],
+          max_tokens=300,
+        )
 
         # string = "```json\n{\n  \"food\": \"Grilled salmon\",\n  \"group\": \"Meat and eggs\"\n}\n```"
-        string = "```json\n{\n  \"food\": \"Feijoada\",\n  \"group\": \"Legumes\"\n}\n```"
+        # string = "```json\n{\n  \"food\": \"Feijoada\",\n  \"group\": \"Legumes\"\n}\n```"
 
-        # string = response.choices[0].message.content
+        string = response.choices[0].message.content
         formata = eval(string.replace('```json\n', '').replace('\n```', ''))
 
-        # if formata["food"] == "Not a food":
-        #     return JSONResponse(content={"message": "Imagem não é um alimento!"})"
+        if formata["food"] == "Not a food":
+            return JSONResponse(content={"message": "Imagem não é um alimento!"})
 
         
-        # teste = response.choices[0]
+        teste = response.choices[0]
         return formata
         return JSONResponse(content={"message": "Imagem verificada com sucesso!"})
     except Exception as e:
