@@ -1,12 +1,11 @@
-# Imports
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
-import json
-import os
 import hashlib
+import smtplib
+import email.message
 # Import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Personalizacao
+from database.sqlalchemy import Usuario, Crianca, UsuarioCrianca
 
 # Router
 router = APIRouter(
@@ -15,52 +14,81 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# Função para criptografar a senha
-def criptografar_senha(password, salt=None):
-    if not salt:
-        salt = os.urandom(16)  # Gera um salt aleatório
-    hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000) # Gera um hash da senha - basicamente a criptografia
-    return salt, hash # Retorna o salt e o hash - eles que devem ser armazenados no banco de dados
-
-# Depois remove o comentário
-# O que fazer: Criar uma rota para cadastrar um novo usuário
-# Como? - Criar um endpoint POST /cadastrar que recebe um JSON com os dados do usuário e salva no banco de dados
-# - O JSON deve conter os campos: nome, email, senha, cpf ou crm, e tipo (responsavel ou médico)
-# - Se o usuário for um responsável, salvar o nome, email, senha e cpf no banco de dados
-# - Se o usuário for um médico, salvar o nome, email, senha e crm no banco de dados
-# - Retornar um JSON com o status 200 e uma mensagem de sucesso
-# - Se ocorrer algum erro, retornar um JSON com o status 401 e uma mensagem de erro
-# - Se o usuário já existir, retornar um JSON com o status 401 e uma mensagem de erro - Verificar se o email já está cadastrado no banco de dados
+def criptografar_senha(senha):
+    senha_bytes = senha.encode('utf-8')
+    sha256 = hashlib.sha256()
+    sha256.update(senha_bytes)
+    senha_hash = sha256.hexdigest()
+    return senha_hash
 
 @router.post("/responsavel")
 async def cadastrar_usuario_responsavel(request: Request):
     session = Conexao().session
     try:
-        # Aqui vem o seu código
+        data = await request.json()
+        responsavel = session.query(Usuario).filter(Usuario.email == data['email']).first()
+        if responsavel:
+            return JSONResponse(content={"message": "Usuário já cadastrado!"})
+        senha = criptografar_senha(data['senha'])
+        novo_responsavel = Usuario(nome_user=data['nome'], email=data['email'], senha=senha, cpf=data['cpf'], tipo_user='R')
+        session.add(novo_responsavel)
+        session.commit()
         return JSONResponse(content={"message": "Usuário cadastrado com sucesso!"})
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao cadastrar o usuário!", "error": str(e)})
     finally:
         session.close()
 
-# Neste caso os dados do médico nos serão enviados por email, com a senha já criptografada e o salt, não podemos ter acesso a ela, apenas verificaremos o crm e etão cadastraremos o médico
+# Cadastro de profissional
 @router.post("/profissional")
 async def cadastrar_usuario_profissional(request: Request):
     session = Conexao().session
     try:
-        # Aqui vem o seu código
-        return JSONResponse(content={"message": "Usuário cadastrado com sucesso!"})
+        data = await request.json()
+        profissional = session.query(Usuario).filter(Usuario.crm == data['crm']).first()
+        if profissional:
+            return JSONResponse(content={"message": "Usuário já cadastrado!"})
+
+        senha = criptografar_senha(data['senha'])
+
+        corpo_email = f"""
+        <p>Nome: {data['nome']}</p>
+        <p>Email: {data['email']}</p>
+        <p>Senha: {senha}</p>
+        <p>CRM: {data['crm']}</p>
+        """
+
+        msg = email.message.Message()
+        msg['Subject'] = "Novo Usuário Profissional"
+        msg['From'] = 'feeditemail@gmail.com'
+        msg['To'] = 'feeditemail@gmail.com'
+        password = 'yaql bljy xjzx qndj' 
+        msg.add_header('Content-Type', 'text/html')
+        msg.set_payload(corpo_email )
+
+        s = smtplib.SMTP('smtp.gmail.com: 587')
+        s.starttls()
+        s.login(msg['From'], password)
+        s.sendmail(msg['From'], [msg['To']], msg.as_string().encode('utf-8'))
+        print('Email enviado')
+
+        return JSONResponse(content={"message": "Tudo certo! Após a verificação do CRM, o médico será cadastrado"})
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao cadastrar o usuário!", "error": str(e)})
     finally:
         session.close()
 
-# Neste caso a crinca só precisa dos campos nome e senha
 @router.post("/crianca")
 async def cadastrar_usuario_crianca(request: Request):
     session = Conexao().session
     try:
-        # Aqui vem o seu código
+        data = await request.json()
+        nova_crianca = Crianca(nome_crianca=data['nome'], senha=criptografar_senha(data['senha']))
+        session.add(nova_crianca)
+        session.commit()
+        nova_relacao = UsuarioCrianca(id_user=data['id_user'], id_crianca=nova_crianca.id_crianca)
+        session.add(nova_relacao)
+        session.commit()
         return JSONResponse(content={"message": "Usuário cadastrado com sucesso!"})
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao cadastrar o usuário!", "error": str(e)})

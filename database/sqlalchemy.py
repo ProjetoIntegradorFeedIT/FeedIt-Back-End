@@ -1,11 +1,11 @@
-# Importações
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, ForeignKey, Integer, String, Float, TIMESTAMP
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, TIMESTAMP, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import func
 
 # Importando o dotenv para pegar a string de conexão
 import os
@@ -36,13 +36,12 @@ class Usuario(Base):
     nome_user = Column(String(50), nullable=False)
     email = Column(String(200), nullable=False, unique=True)
     senha = Column(String(200), nullable=False)
-    salt = Column(String(200), nullable=False)
 
 class Crianca(Base):
     __tablename__ = 'criancas'
     id_crianca = Column(Integer, primary_key=True, autoincrement=True)
     nome_crianca = Column(String(50), nullable=False)
-    senha = Column(String(50), nullable=False)
+    senha = Column(String(200), nullable=False)
     nivel = Column(Integer, default=1)
     xp_atual = Column(Integer, default=0)
     xp_necessario = Column(Integer, default=100)
@@ -64,12 +63,12 @@ class Pet(Base):
     id_pet = Column(Integer, primary_key=True, autoincrement=True)
     id_crianca = Column(Integer, ForeignKey('criancas.id_crianca'))
     nome_pet = Column(String(100), nullable=False)
-    tipo_pet = Column(String(3), nullable=False)
+    tipo_pet = Column(String(10), nullable=False)
     alimentacao = Column(Float, default=0)
     energia = Column(Float, default=0)
     felicidade = Column(Float, default=0)
     forca = Column(Float, default=0)
-    alteracao = Column(TIMESTAMP, default='CURRENT_TIMESTAMP', onupdate='CURRENT_TIMESTAMP')
+    alteracao = Column(TIMESTAMP, default=func.current_timestamp(), onupdate=func.current_timestamp())
     chapeu = Column(Integer, default=1)
     roupa = Column(Integer, default=1)
     cor = Column(Integer, default=1)
@@ -82,6 +81,7 @@ class Personalizacao(Base):
     url_img = Column(String(255), nullable=False, unique=True)
     tipo_perso = Column(String(6), nullable=False)
     preco = Column(Integer)
+    tipo_pet = Column(String(10), nullable=False)
 
 class PersonalizacaoPet(Base):
     __tablename__ = 'personalizacao_pets'
@@ -109,10 +109,11 @@ class CriancaMissao(Base):
     id_crianca = Column(Integer, ForeignKey('criancas.id_crianca'))
     id_missao = Column(Integer, ForeignKey('missoes.id_missao'))
     progresso_tarefa = Column(Integer)
-    created_at = Column(TIMESTAMP, default='CURRENT_TIMESTAMP')
+    created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
     prazo = Column(TIMESTAMP)
     crianca = relationship("Crianca", back_populates="tarefas")
     missao = relationship("Missao", back_populates="criancas")
+
 
 Crianca.tarefas = relationship("CriancaMissao", back_populates="crianca")
 Missao.criancas = relationship("CriancaMissao", back_populates="missao")
@@ -122,8 +123,26 @@ class Token(Base):
     id_token = Column(Integer, primary_key=True, autoincrement=True)
     token = Column(String(10), nullable=False)
     cod = Column(String(5), nullable=False)
-    created_at = Column(TIMESTAMP, default='CURRENT_TIMESTAMP')
+    created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
     deleted_at = Column(TIMESTAMP)
+
+class GrupoComidas(Base):
+    __tablename__ = 'grupo_comidas'
+    id_comida = Column(Integer, primary_key=True)
+    grupo = Column(String(50))
+    pnt_forca = Column(Float)
+    pnt_alimentacao = Column(Float)
+    pnt_felicidade = Column(Float)
+    pnt_energia = Column(Float)
+
+class Status(Base):
+    __tablename__ = 'status'
+    id_alter = Column(Integer, primary_key=True, autoincrement=True)
+    atribuicao = Column(Date)
+    pnt_forca = Column(Float)
+    pnt_alimentacao = Column(Float)
+    pnt_felicidade = Column(Float)
+    pnt_energia = Column(Float)
 
 def cria_tabelas():
     Base.metadata.create_all(engine)
