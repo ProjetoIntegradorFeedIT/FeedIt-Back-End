@@ -1,12 +1,10 @@
 # Imports
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-import json
-import os
 import hashlib
 # Import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Personalizacao
+from database.sqlalchemy import Usuario, Crianca
 
 # Router
 router = APIRouter(
@@ -17,44 +15,61 @@ router = APIRouter(
 
 # Função para criptografar a senha
 def criptografar_senha(senha):
-    # Codificando a senha em bytes
+    # Codifica a senha em bytes
     senha_bytes = senha.encode('utf-8')
-
-    # Criando um objeto de hash usando o algoritmo SHA-256
+    # Criando o objeto hash
     sha256 = hashlib.sha256()
-
-    # Atualizando o objeto de hash com a senha codificada
+    # Atualizando o objeto hash com a senha em bytes
     sha256.update(senha_bytes)
-
-    # Gerando o hash da senha e retornando como hexadecimal
+    # Gerando o hash da senha
     senha_hash = sha256.hexdigest()
-    
     return senha_hash
 
-# Função para descriptografar a senha que vem do banco de dados
 def verificar_senha(senha, senha_hash):
-    # Criptografando a senha fornecida
-    senha_fornecida_hash = criptografar_senha(senha)
-
-    # Verificando se a senha fornecida e a senha armazenada são iguais
-    if senha_fornecida_hash == senha_hash:
+    # Criptografando a senha em bytes
+    senha_digitada = criptografar_senha(senha)
+    # Verificando se a senha está correta
+    if senha_digitada == senha_hash:
         return True
-    else:
-        return False
-# Depois remove o comentário
-# O que fazer: Criar uma rota para autenticar um usuário
-# Como? - Criar um endpoint POST /login que recebe um JSON com o email e a senha do usuário
-# - O JSON deve conter os campos: email e senha
-# - Se o email e a senha estiverem corretos, retornar um JSON com o status 200 e uma mensagem de sucesso
-# - Se o email ou a senha estiverem incorretos, retornar um JSON com o status 401 e uma mensagem de erro
-# Descomentar o Código a seguir
-# @router.post("/")
-# async def login(infos: InfosLogin):
-#     session = Conexao().session
-#     try:
-#         # Aqui vem o seu código
-#         return JSONResponse(content={"message": "Login realizado com sucesso!"})
-#     except Exception as e:
-#         return JSONResponse(content={"message": "Erro ao realizar o login!", "error": str(e)})
-#     finally:
-#         session.close()
+    return False
+
+# Rota para realizar o login
+@router.post("/")
+async def login(request: Request):
+    session = Conexao().session
+    try:
+        data = await request.json()
+        # Verificando se os campos estão preenchidos
+        if (not data['email'] or not data['nome']) and not data['senha']:
+            return JSONResponse(content={"message": "Obrigatório preencher todos os campos!"}, status_code=400)
+        # Verificando se o nome está vazio
+        if data['nome'] == "":
+            # Buscando o usuário no banco
+            usuario = session.query(Usuario).filter(Usuario.email == data["email"]).first()
+            # Verificando se o usuário existe
+            if not usuario:
+                return JSONResponse(content={"message": "Usuário não encontrado!"}, status_code=404)
+            # Verificando se a senha está correta
+            if not verificar_senha(data['senha'], usuario.senha):
+                return JSONResponse(content={"message": "Senha incorreta!"}, status_code=401)
+            # Retornando a mensagem de sucesso
+            return JSONResponse(content={"message": "Login realizado com sucesso!",
+                                         "id_usuario": f"{usuario.id_user}"}, status_code=200)
+        # Verificando se o email está vazio
+        if data['email'] == "":
+            # Buscando a criança no banco
+            crianca = session.query(Crianca).filter(Crianca.nome_crianca == data["nome"]).first()
+            if not crianca:
+                return JSONResponse(content={"message": "Criança não encontrada!"}, status_code=404)
+            # Verificando se a senha está correta
+            if not verificar_senha(data['senha'], crianca.senha):
+                return JSONResponse(content={"message": "Senha incorreta!"}, status_code=401)
+            # Retornando a mensagem de sucesso
+            return JSONResponse(content={"message": "Login realizado com sucesso!",
+                                         "id_crianca": f"{crianca.id_crianca}"}, status_code=200)
+    # Tratamento de exceção
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao realizar o login!", "error": str(e)})
+    # Fechando a sessão
+    finally:
+        session.close()
