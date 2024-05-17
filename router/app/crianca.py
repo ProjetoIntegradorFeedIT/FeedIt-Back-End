@@ -55,6 +55,28 @@ async def listar_personalizacao():
     finally:
         session.close()
 
+# Listar todas as personalizações divididas por tipo
+@router.get("/listar_personalizacao_tipo")
+async def listar_personalizacao_tipo():
+    session = Conexao().session
+    try:
+        personalizacoes = session.query(Personalizacao).all()
+        dict_personalizacoes = {}
+        for p in personalizacoes:
+            if p.tipo not in dict_personalizacoes:
+                dict_personalizacoes[p.tipo] = []
+            dict_personalizacoes[p.tipo].append({
+                "id_personalizacao": p.id_personalizacao,
+                "nome_personalizacao": p.nome_personalizacao,
+                "tipo": p.tipo,
+                "valor": p.valor
+            })
+        return dict_personalizacoes
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao listar personalizações!", "error": str(e)})
+    finally:
+        session.close()
+
 # Atualizar personalização do Pet
 @router.post("/salvar_personalizacao_pet")
 async def salvar_personalizacao(request: Request):
