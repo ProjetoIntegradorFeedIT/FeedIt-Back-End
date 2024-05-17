@@ -56,20 +56,21 @@ async def listar_personalizacao():
         session.close()
 
 # Listar todas as personalizações divididas por tipo
-@router.get("/listar_personalizacao_tipo")
-async def listar_personalizacao_tipo():
+@router.get("/listar_personalizacao_tipo/{tipo_pet}")
+async def listar_personalizacao_tipo(tipo_pet: str):
     session = Conexao().session
     try:
-        personalizacoes = session.query(Personalizacao).all()
+        personalizacoes = session.query(Personalizacao).filter(Personalizacao.tipo_perso == tipo_pet).all()
         dict_personalizacoes = {}
         for p in personalizacoes:
-            if p.tipo not in dict_personalizacoes:
-                dict_personalizacoes[p.tipo] = []
-            dict_personalizacoes[p.tipo].append({
-                "id_personalizacao": p.id_personalizacao,
-                "nome_personalizacao": p.nome_personalizacao,
-                "tipo": p.tipo,
-                "valor": p.valor
+            if p.tipo_perso not in dict_personalizacoes:
+                dict_personalizacoes[p.tipo_perso] = []
+            dict_personalizacoes[p.tipo_perso].append({
+                "id_perso": p.id_perso,
+                "nome_perso": p.nome_perso,
+                "url": p.url_img,
+                "tipo": p.tipo_perso,
+                "valor": p.preco
             })
         return dict_personalizacoes
     except Exception as e:
