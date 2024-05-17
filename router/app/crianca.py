@@ -61,17 +61,45 @@ async def listar_personalizacao_tipo(tipo_pet: str):
     session = Conexao().session
     try:
         personalizacoes = session.query(Personalizacao).filter(Personalizacao.tipo_perso == tipo_pet).all()
-        dict_personalizacoes = {}
+        dict_personalizacoes = {
+            "chapeu": [],
+            "roupa": [],
+            "fundo": [],
+            "cor": []
+        }
         for p in personalizacoes:
-            if p.tipo_perso not in dict_personalizacoes:
-                dict_personalizacoes[p.tipo_perso] = []
-            dict_personalizacoes[p.tipo_perso].append({
-                "id_perso": p.id_perso,
-                "nome_perso": p.nome_perso,
-                "url": p.url_img,
-                "tipo": p.tipo_perso,
-                "valor": p.preco
-            })
+            if p.tipo_perso == "Chapeu":
+                dict_personalizacoes["chapeu"].append({
+                    "id_perso": p.id_perso,
+                    "nome_perso": p.nome_perso,
+                    "url": p.url_img,
+                    "tipo": p.tipo_perso,
+                    "valor": p.preco
+                })
+            elif p.tipo_perso == "Roupa":
+                dict_personalizacoes["roupa"].append({
+                    "id_perso": p.id_perso,
+                    "nome_perso": p.nome_perso,
+                    "url": p.url_img,
+                    "tipo": p.tipo_perso,
+                    "valor": p.preco
+                })
+            elif p.tipo_perso == "Fundo":
+                dict_personalizacoes["fundo"].append({
+                    "id_perso": p.id_perso,
+                    "nome_perso": p.nome_perso,
+                    "url": p.url_img,
+                    "tipo": p.tipo_perso,
+                    "valor": p.preco
+                })
+            elif p.tipo_perso == "Cor":
+                dict_personalizacoes["cor"].append({
+                    "id_perso": p.id_perso,
+                    "nome_perso": p.nome_perso,
+                    "url": p.url_img,
+                    "tipo": p.tipo_perso,
+                    "valor": p.preco
+                })
         return dict_personalizacoes
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao listar personalizações!", "error": str(e)})
