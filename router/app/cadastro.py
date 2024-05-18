@@ -83,6 +83,27 @@ async def cadastrar_usuario_responsavel_email(request: Request):
     finally:
         session.close()
 
+@router.post("/responsavel_codigo")
+async def cadastrar_usuario_responsavel_codigo(request: Request):
+    session = Conexao().session
+    try:
+        data = await request.json()
+        token = session.query(Token).filter(Token.cod == data['codigo']).first()
+        if not token:
+            return JSONResponse(content={"message": "Código inválido!"})
+        responsavel = session.query(Usuario).filter(Usuario.email == data['email']).first()
+        if responsavel:
+            return JSONResponse(content={"message": "Usuário já cadastrado!"})
+        senha = criptografar_senha(data['senha'])
+        novo_responsavel = Usuario(nome_user=data['nome'], email=data['email'], senha=senha, cpf=data['cpf'], tipo_user='R')
+        session.add(novo_responsavel)
+        session.commit()
+        return JSONResponse(content={"message": "Usuário cadastrado com sucesso!"})
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao cadastrar o usuário!", "error": str(e)})
+    finally:
+        session.close()
+
 # Cadastro de profissional
 @router.post("/profissional")
 async def cadastrar_usuario_profissional(request: Request):
