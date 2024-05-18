@@ -55,7 +55,7 @@ async def cadastrar_usuario_responsavel_email(request: Request):
         caracteres = string.ascii_letters + string.digits
         codigo = ''.join(random.choice(caracteres) for _ in range(5))
 
-        insert = Token(cod=codigo, created_at=datetime.datetime.now())
+        insert = Token(cod=codigo)
         session.add(insert)
         session.commit()
         
