@@ -108,7 +108,7 @@ A parte back-end do projeto foi construida usando as seguintes tecnologias.
 * [![AWS][aws.io]][aws-url]
 * [![ChatGPT][gpt.io]][gpt-url]
 * [![FastAPI][fast.io]][fast-url]
-* [![MySQL][mysql.io]][mysql.url]
+* [![MySQL][mysql.io]][mysql-url]
 
 
 
