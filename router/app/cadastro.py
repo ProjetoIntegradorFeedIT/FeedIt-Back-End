@@ -2,10 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 import hashlib
 import smtplib
+import datetime
+import random
+import string
 import email.message
 # Import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Usuario, Crianca, UsuarioCrianca
+from database.sqlalchemy import Usuario, Crianca, UsuarioCrianca, Token
 
 # Router
 router = APIRouter(
@@ -34,6 +37,47 @@ async def cadastrar_usuario_responsavel(request: Request):
         session.add(novo_responsavel)
         session.commit()
         return JSONResponse(content={"message": "Usuário cadastrado com sucesso!"})
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao cadastrar o usuário!", "error": str(e)})
+    finally:
+        session.close()
+    
+@router.post("/responsavel_email")
+async def cadastrar_usuario_responsavel_email(request: Request):
+    session = Conexao().session
+    try:
+        data = await request.json()
+
+        responsavel = session.query(Usuario).filter(Usuario.email == data['email']).first()
+        if responsavel:
+            return JSONResponse(content={"message": "Usuário já cadastrado!"})
+
+        caracteres = string.ascii_letters + string.digits
+        codigo = ''.join(random.choice(caracteres) for _ in range(5))
+
+        insert = Token(cod=codigo, created_at=datetime.now())
+        session.add(insert)
+        session.commit()
+        
+        corpo_email = f"""
+        <p>Código: {codigo}</p>
+        """
+
+        msg = email.message.Message()
+        msg['Subject'] = "Seu Código de Verificação"
+        msg['From'] = 'feeditemail@gmail.com'
+        msg['To'] = data['email']
+        password = 'yaql bljy xjzx qndj' 
+        msg.add_header('Content-Type', 'text/html')
+        msg.set_payload(corpo_email )
+
+        s = smtplib.SMTP('smtp.gmail.com: 587')
+        s.starttls()
+        s.login(msg['From'], password)
+        s.sendmail(msg['From'], [msg['To']], msg.as_string().encode('utf-8'))
+        print('Email enviado')
+
+        return JSONResponse(content={"message": "Te enviamos um email para verificação!"})
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao cadastrar o usuário!", "error": str(e)})
     finally:
