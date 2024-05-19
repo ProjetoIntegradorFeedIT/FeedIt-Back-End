@@ -73,12 +73,17 @@ async def login(request: Request):
             if not verificar_senha(data['senha'], usuario.senha):
                 return JSONResponse(content={"message": "Senha incorreta!"}, status_code=401)
             token = geraTokenA(usuario.nome_user, usuario.email, usuario.tipo_user, usuario.cpf)
+            select_token = session.query(Token).filter(Token.id_user == usuario.id_user).first()
+            if select_token:
+                session.delete(select_token)
+                session.commit()
             insert_token = Token(id_user=usuario.id_user, token=token, created_at=datetime.now())
             session.add(insert_token)
             session.commit()
             # Retornando a mensagem de sucesso
             return JSONResponse(content={"message": "Login realizado com sucesso!",
-                                         "token": token,
+                                         "token": f"{token}",
+                                         "tipo": f"{usuario.tipo_user}",
                                          "id_usuario": f"{usuario.id_user}"}, 
                                          status_code=200)
         # Verificando se o email está vazio
@@ -91,16 +96,21 @@ async def login(request: Request):
             if not verificar_senha(data['senha'], crianca.senha):
                 return JSONResponse(content={"message": "Senha incorreta!"}, status_code=401)
             token = geraTokenB(crianca.nome_crianca, crianca.senha)
+            select_token = session.query(Token).filter(Token.id_crianca == crianca.id_crianca).first()
+            if select_token:
+                session.delete(select_token)
+                session.commit()
             insert_token = Token(id_crianca=crianca.id_crianca, token=token, created_at=datetime.now())
             session.add(insert_token)
             session.commit()
             # Retornando a mensagem de sucesso
             return JSONResponse(content={"message": "Login realizado com sucesso!",
-                                         "token": token,
+                                         "token": f"{token}",
+                                         "tipo": "C",
                                          "id_crianca": f"{crianca.id_crianca}"}, status_code=200)
     # Tratamento de exceção
     except Exception as e:
-        return JSONResponse(content={"message": "Erro ao realizar o login!", "error": str(e)})
+        return JSONResponse(status_code= 400, content={"message": "Erro ao realizar o login!", "error": str(e)})
     # Fechando a sessão
     finally:
         session.close()
