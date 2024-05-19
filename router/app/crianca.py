@@ -22,6 +22,12 @@ async def info_crianca(id_crianca: int):
     try:
         crianca = session.query(Crianca).filter(Crianca.id_crianca == id_crianca).first()
         pet = session.query(Pet).filter(Pet.id_crianca == crianca.id_crianca).first()
+
+        get_cor = session.query(Personalizacao).filter(Personalizacao.id_perso == pet.cor).first()
+        get_chapeu = session.query(Personalizacao).filter(Personalizacao.id_perso == pet.chapeu).first()
+        get_roupa = session.query(Personalizacao).filter(Personalizacao.id_perso == pet.roupa).first()
+        get_fundo = session.query(Personalizacao).filter(Personalizacao.id_perso == pet.fundo).first()
+
         dict_crianca = {
             "id_crianca": crianca.id_crianca,
             "nome_crianca": crianca.nome_crianca,
@@ -32,10 +38,10 @@ async def info_crianca(id_crianca: int):
             "id_pet": pet.id_pet,
             "nome_pet": pet.nome_pet,
             "tipo_pet": pet.tipo_pet,
-            "cor": pet.cor,
-            "chapeu": pet.chapeu,
-            "roupa": pet.roupa,
-            "fundo": pet.fundo,
+            "cor": get_fundo.url_img,
+            "chapeu": get_chapeu.url_img,
+            "roupa": get_roupa.url_img,
+            "fundo": get_fundo.url_img,
         }
         return JSONResponse(content={"message": "Criança encontrada.", "crianca": dict_crianca})
     except Exception as e:
