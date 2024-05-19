@@ -121,6 +121,8 @@ Missao.criancas = relationship("CriancaMissao", back_populates="missao")
 class Token(Base):
     __tablename__ = 'tokens'
     id_token = Column(Integer, primary_key=True, autoincrement=True)
+    id_user = Column(Integer, ForeignKey('usuarios.id_user'))
+    id_crianca = Column(Integer, ForeignKey('criancas.id_crianca'))
     token = Column(String(255), nullable=True)
     cod = Column(String(5), nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
