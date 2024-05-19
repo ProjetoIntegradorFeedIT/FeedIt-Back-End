@@ -83,6 +83,7 @@ async def login(request: Request):
             # Retornando a mensagem de sucesso
             return JSONResponse(content={"message": "Login realizado com sucesso!",
                                          "token": token,
+                                         "tipo": f"{usuario.tipo_user}",
                                          "id_usuario": f"{usuario.id_user}"}, 
                                          status_code=200)
         # Verificando se o email está vazio
@@ -105,6 +106,7 @@ async def login(request: Request):
             # Retornando a mensagem de sucesso
             return JSONResponse(content={"message": "Login realizado com sucesso!",
                                          "token": token,
+                                         "tipo": "C",
                                          "id_crianca": f"{crianca.id_crianca}"}, status_code=200)
     # Tratamento de exceção
     except Exception as e:
