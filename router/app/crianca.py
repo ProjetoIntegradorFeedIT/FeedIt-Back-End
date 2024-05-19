@@ -21,7 +21,12 @@ async def info_crianca(id_crianca: int):
     session = Conexao().session
     try:
         crianca = session.query(Crianca).filter(Crianca.id_crianca == id_crianca).first()
+        if not crianca:
+            raise HTTPException(status_code=404, detail="Criança não encontrada")
+
         pet = session.query(Pet).filter(Pet.id_crianca == crianca.id_crianca).first()
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet não encontrado")
 
         get_cor = session.query(Personalizacao).filter(Personalizacao.id_perso == pet.cor).first()
         get_chapeu = session.query(Personalizacao).filter(Personalizacao.id_perso == pet.chapeu).first()
@@ -38,14 +43,16 @@ async def info_crianca(id_crianca: int):
             "id_pet": pet.id_pet,
             "nome_pet": pet.nome_pet,
             "tipo_pet": pet.tipo_pet,
-            "cor": get_fundo.url_img,
-            "chapeu": get_chapeu.url_img,
-            "roupa": get_roupa.url_img,
-            "fundo": get_fundo.url_img,
+            "cor": get_cor.url_img if get_cor else None,
+            "chapeu": get_chapeu.url_img if get_chapeu else None,
+            "roupa": get_roupa.url_img if get_roupa else None,
+            "fundo": get_fundo.url_img if get_fundo else None,
         }
         return JSONResponse(content={"message": "Criança encontrada.", "crianca": dict_crianca})
+    except HTTPException as e:
+        return JSONResponse(content={"message": e.detail}, status_code=e.status_code)
     except Exception as e:
-        return JSONResponse(content={"message": "Erro ao encontrar a criança!", "error": str(e)})
+        return JSONResponse(content={"message": "Erro ao encontrar a criança!", "error": str(e)}, status_code=500)
     finally:
         session.close()
 
