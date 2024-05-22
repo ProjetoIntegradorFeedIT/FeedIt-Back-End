@@ -5,7 +5,7 @@ import json
 import os
 # Import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Personalizacao
+from database.sqlalchemy import Personalizacao, UsuarioCrianca, Crianca
 
 # Router
 router = APIRouter(
@@ -13,6 +13,18 @@ router = APIRouter(
     tags = ["Responsavel"],
     responses={404: {"description": "Not found"}},
 )
+
+# Função quick_sort
+def quick_sort(lista):
+    if len(lista) <= 1:
+        return lista
+    else:
+        pivot = lista[len(lista) // 2]
+        esq = [x for x in lista if x < pivot]
+        meio = [x for x in lista if x == pivot]
+        dir = [x for x in lista if x > pivot]
+        return quick_sort(esq) + meio + quick_sort(dir)
+
 
 # As funções devem conectar no bd para conseguir suas informações necessarias
 # Deve se retornar oq for necessário para a tela
@@ -23,8 +35,24 @@ router = APIRouter(
 async def listar_criancas(id_responsavel: int):
     session = Conexao().session
     try:
-        # Aqui vem o codigo
-        return "Coloque o retorno aqui"
+        # criancas = session.query(UsuarioCrianca).filter(UsuarioCrianca.id_user == id_responsavel).all()
+        id_criancas = [result[0] for result in session.query(UsuarioCrianca.id_crianca).filter(UsuarioCrianca.id_user == id_responsavel).all()]
+
+        if not id_criancas:
+            raise HTTPException(status_code=404, detail="Crianças não encontradas para este responsável")
+        
+        criancas = {}
+        for id in id_criancas:
+            crianca = session.query(Crianca).filter(Crianca.id_crianca == id).first()
+            criancas[crianca.nome_crianca] = crianca
+
+        # return JSONResponse(content={"criancas": criancas}, status_code=200)
+        return criancas
+    
+    except Exception as e:
+        # Logar o erro pode ser útil para depuração
+        print(f"Erro ao listar crianças: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
     finally:
         session.close()
 

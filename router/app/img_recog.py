@@ -1,11 +1,11 @@
 # Imports
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
-import requests
+# import requests
 import os
 from openai import OpenAI
 
-# Import db connection
+# import db connection
 from database.conexao import Conexao
 from database.sqlalchemy import Personalizacao
 
