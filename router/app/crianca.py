@@ -132,6 +132,7 @@ async def personalizacao_pet(id_crianca: int):
         envio["chapeu"] = pet.chapeu
         envio["roupa"] = pet.roupa
         envio["fundo"] = pet.fundo
+        envio["idPet"] = pet.id_pet
 
         return envio  
     except Exception as e:
