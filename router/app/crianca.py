@@ -107,6 +107,7 @@ async def personalizacao_pet(id_crianca: int):
         personalizacoes = session.query(Personalizacao).filter(Personalizacao.tipo_pet == pet.tipo_pet).all()
         # personalizacoesPet = session.query(PersonalizacaoPet).filter(PersonalizacaoPet.id_pet == pet.id_pet).all()
 
+        envio = {}
         dict_personalizacoes = {}
         for p in personalizacoes:
 
@@ -126,7 +127,13 @@ async def personalizacao_pet(id_crianca: int):
             else:
                 dict_personalizacoes[p.tipo_perso][-1]["liberado"] = True
 
-        return dict_personalizacoes     
+        envio["personalizacoes"] = dict_personalizacoes
+        envio["cor"] = pet.cor
+        envio["chapeu"] = pet.chapeu
+        envio["roupa"] = pet.roupa
+        envio["fundo"] = pet.fundo
+
+        return envio  
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao listar personalizações!", "error": str(e)})
     finally:
