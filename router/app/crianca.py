@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 # Import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Personalizacao, Crianca, Pet, CriancaMissao, Missao
+from database.sqlalchemy import Personalizacao, Crianca, Pet, CriancaMissao, Missao, PersonalizacaoPet
 
 # Router
 router = APIRouter(
@@ -90,6 +90,49 @@ async def listar_personalizacao_tipo(tipo_pet: str):
         return JSONResponse(content={"message": "Erro ao listar personalizações!", "error": str(e)})
     finally:
         session.close()
+
+# Personalização do pet + lista de personalizações + desbloqueio ou não
+@router.get("/personalizacao_pet/{id_crianca}")
+async def personalizacao_pet(id_crianca: int):
+    session = Conexao().session
+    try:
+        crianca = session.query(Crianca).filter(Crianca.id_crianca == id_crianca).first()
+        if not crianca:
+            raise HTTPException(status_code=404, detail="Criança não encontrada")
+
+        pet = session.query(Pet).filter(Pet.id_crianca == crianca.id_crianca).first()
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet não encontrado")
+        
+        personalizacoes = session.query(Personalizacao).filter(Personalizacao.tipo_pet == pet.tipo_pet).all()
+        # personalizacoesPet = session.query(PersonalizacaoPet).filter(PersonalizacaoPet.id_pet == pet.id_pet).all()
+
+        dict_personalizacoes = {}
+        for p in personalizacoes:
+
+            personalizacao_pet = session.query(PersonalizacaoPet).filter(PersonalizacaoPet.id_pet == pet.id_pet, PersonalizacaoPet.id_perso == p.id_perso).first()
+
+            if p.tipo_perso not in dict_personalizacoes:
+                dict_personalizacoes[p.tipo_perso] = []
+            dict_personalizacoes[p.tipo_perso].append({
+                "id_perso": p.id_perso,
+                "nome_perso": p.nome_perso,
+                "url": p.url_img,
+                "tipo": p.tipo_perso,
+                "valor": p.preco,
+            })
+            if not personalizacao_pet:
+                dict_personalizacoes[p.tipo_perso][-1]["liberado"] = False    
+            else:
+                dict_personalizacoes[p.tipo_perso][-1]["liberado"] = True
+
+        return dict_personalizacoes     
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao listar personalizações!", "error": str(e)})
+    finally:
+        session.close()
+        
+            
 
 # Atualizar personalização do Pet
 @router.post("/salvar_personalizacao_pet")

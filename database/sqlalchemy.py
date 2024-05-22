@@ -87,7 +87,7 @@ class PersonalizacaoPet(Base):
     __tablename__ = 'personalizacao_pets'
     id_habilitacao = Column(Integer, primary_key=True, autoincrement=True)
     id_pet = Column(Integer, ForeignKey('pets.id_pet'))
-    url_img = Column(String(255), ForeignKey('personalizacoes.url_img'))
+    id_perso = Column(Integer, ForeignKey('personalizacoes.id_perso'))
     liberado = Column(Integer, default=0)
     pet = relationship("Pet", back_populates="personalizacoes")
     personalizacao = relationship("Personalizacao", back_populates="pets")
