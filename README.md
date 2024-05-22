@@ -19,9 +19,6 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 [![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
@@ -106,9 +103,15 @@ Use the `BLANK_README.md` to get started.
 A parte back-end do projeto foi construida usando as seguintes tecnologias.
 
 * [![AWS][aws.io]][aws-url]
+<<<<<<< HEAD
 * ![ChatGPT](https://img.shields.io/badge/ChatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white)
 * ![FastAPI](https://img.shields.io/badge/fastapi-109989?style=for-the-badge&logo=FASTAPI&logoColor=white)
 * ![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+=======
+* [![ChatGPT][gpt.io]][gpt-url]
+* [![FastAPI][fast.io]][fast-url]
+* [![MySQL][mysql.io]][mysql-url]
+>>>>>>> b3ee265f9b2814eb3390be49830bce34c12fa10d
 
 
 
@@ -248,7 +251,7 @@ Use this space to list resources you find helpful and would like to give credit 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
+[contributors-url]: https://github.com/ProjetoIntegradorFeedIT/FeedIt-Back-End/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
 [forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
 [stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
@@ -260,6 +263,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/othneildrew
 [product-screenshot]: images/screenshot.png
+<<<<<<< HEAD
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
@@ -278,3 +282,13 @@ Use this space to list resources you find helpful and would like to give credit 
 [JQuery-url]: https://jquery.com 
 [aws.io]: https://img.shields.io/badge/Amazon_AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white
 [aws-url]: https://aws.amazon.com/pt/free/?gclid=CjwKCAjwo6GyBhBwEiwAzQTmcxbGlEK-qNXxQFTQKCg4rFyi-1_slnXzJxxi7eGFV0uqNSliyh7QARoCZdcQAvD_BwE&trk=2ee11bb2-bc40-4546-9852-2c4ad8e8f646&sc_channel=ps&ef_id=CjwKCAjwo6GyBhBwEiwAzQTmcxbGlEK-qNXxQFTQKCg4rFyi-1_slnXzJxxi7eGFV0uqNSliyh7QARoCZdcQAvD_BwE:G:s&s_kwcid=AL!4422!3!696214219377!e!!g!!aws!15278604629!130587771740&all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=*all
+=======
+[aws.io]: https://img.shields.io/badge/Amazon_AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white
+[aws-url]: https://aws.amazon.com/pt/free/?gclid=CjwKCAjwo6GyBhBwEiwAzQTmcxbGlEK-qNXxQFTQKCg4rFyi-1_slnXzJxxi7eGFV0uqNSliyh7QARoCZdcQAvD_BwE&trk=2ee11bb2-bc40-4546-9852-2c4ad8e8f646&sc_channel=ps&ef_id=CjwKCAjwo6GyBhBwEiwAzQTmcxbGlEK-qNXxQFTQKCg4rFyi-1_slnXzJxxi7eGFV0uqNSliyh7QARoCZdcQAvD_BwE:G:s&s_kwcid=AL!4422!3!696214219377!e!!g!!aws!15278604629!130587771740&all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=*all
+[gpt.io]: https://img.shields.io/badge/ChatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white
+[gpt-url]: https://openai.com/
+[fast.io]: https://img.shields.io/badge/fastapi-109989?style=for-the-badge&logo=FASTAPI&logoColor=white
+[fast-url]: https://fastapi.tiangolo.com/pt/
+[mysql.io]: https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white
+[mysql-url]: https://www.mysql.com/
+>>>>>>> b3ee265f9b2814eb3390be49830bce34c12fa10d
