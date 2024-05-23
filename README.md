@@ -103,15 +103,12 @@ Use the `BLANK_README.md` to get started.
 A parte back-end do projeto foi construida usando as seguintes tecnologias.
 
 * [![AWS][aws.io]][aws-url]
-<<<<<<< HEAD
 * ![ChatGPT](https://img.shields.io/badge/ChatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white)
 * ![FastAPI](https://img.shields.io/badge/fastapi-109989?style=for-the-badge&logo=FASTAPI&logoColor=white)
 * ![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
-=======
 * [![ChatGPT][gpt.io]][gpt-url]
 * [![FastAPI][fast.io]][fast-url]
 * [![MySQL][mysql.io]][mysql-url]
->>>>>>> b3ee265f9b2814eb3390be49830bce34c12fa10d
 
 
 
