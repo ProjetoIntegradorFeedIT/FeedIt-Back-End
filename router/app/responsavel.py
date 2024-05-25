@@ -5,7 +5,7 @@ import json
 import os
 # Import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Personalizacao, UsuarioCrianca, Crianca
+from database.sqlalchemy import Personalizacao, UsuarioCrianca, Crianca, CriancaMissao
 
 # Router
 router = APIRouter(
@@ -39,12 +39,13 @@ async def listar_criancas(id_responsavel: int):
         id_criancas = [result[0] for result in session.query(UsuarioCrianca.id_crianca).filter(UsuarioCrianca.id_user == id_responsavel).all()]
 
         if not id_criancas:
-            raise HTTPException(status_code=404, detail="Crianças não encontradas para este responsável")
+            raise HTTPException(status_code=204, detail="Crianças não encontradas para este responsável")
         
         criancas = {}
         for id in id_criancas:
             crianca = session.query(Crianca).filter(Crianca.id_crianca == id).first()
             criancas[crianca.nome_crianca] = crianca
+            criancas[crianca.nome_crianca].missoes = session.query(CriancaMissao).filter(CriancaMissao.id_crianca == crianca.id_crianca).all()
 
         # return JSONResponse(content={"criancas": criancas}, status_code=200)
         return criancas
