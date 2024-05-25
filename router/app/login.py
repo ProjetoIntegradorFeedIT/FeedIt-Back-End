@@ -82,7 +82,7 @@ async def login(request: Request):
             session.commit()
             # Retornando a mensagem de sucesso
             return JSONResponse(content={"message": "Login realizado com sucesso!",
-                                         "token": token,
+                                         "token": f"{token}",
                                          "tipo": f"{usuario.tipo_user}",
                                          "finalizou_crianca": f"{usuario.finalizou_crianca}",
                                          "id_usuario": f"{usuario.id_user}"},
