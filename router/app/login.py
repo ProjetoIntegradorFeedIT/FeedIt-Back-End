@@ -84,7 +84,8 @@ async def login(request: Request):
             return JSONResponse(content={"message": "Login realizado com sucesso!",
                                          "token": f"{token}",
                                          "tipo": f"{usuario.tipo_user}",
-                                         "id_usuario": f"{usuario.id_user}"}, 
+                                         "finalizou_crianca": f"{usuario.finalizou_crianca}",
+                                         "id_usuario": f"{usuario.id_user}"},
                                          status_code=200)
         # Verificando se o email está vazio
         if data['email'] == "":
