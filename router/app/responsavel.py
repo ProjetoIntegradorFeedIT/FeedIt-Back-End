@@ -55,6 +55,7 @@ async def listar_criancas(id_responsavel: int):
                     "valor": select.valor,
                     "tamanho": select.tamanho,
                     "progresso_tarefa": m.progresso_tarefa,
+                    "id_missao": select.id_missao,
                 }
             criancas[crianca.nome_crianca].missao = dict_missao
             
@@ -70,25 +71,31 @@ async def listar_criancas(id_responsavel: int):
 
 # Esta função deve aumentar o progresso de uma missão de uma criança
 # Descomentar o Código a seguir
-# @router.post("/aumentar_missao")
-# async def aumentar_missao(missao: Missao):
-#     session = Conexao().session
-#     try:
-#         # Aqui vem o codigo
-#         return "Coloque o retorno aqui"
-#     finally:
-#         session.close()
+@router.post("/aumentar_missao")
+async def aumentar_missao(request: Request):
+    session = Conexao().session
+    try:
+        data = await request.json()
+        missao = session.query(CriancaMissao).filter(CriancaMissao.id_crianca == data['id_crianca'], CriancaMissao.id_missao == data['id_missao']).first()
+        missao.progresso_tarefa += 1
+        session.commit()
+        return "Progresso da missão aumentado"
+    finally:
+        session.close()
 
 # Esta função deve diminuir o progresso de uma missão de uma criança
 # Descomentar o Código a seguir
-# @router.post("/diminuir_missao")
-# async def diminuir_missao(missao: Missao):
-#     session = Conexao().session
-#     try:
-#         # Aqui vem o codigo
-#         return "Coloque o retorno aqui"
-#     finally:
-#         session.close()
+@router.post("/diminuir_missao")
+async def diminuir_missao(request: Request):
+    session = Conexao().session
+    try:
+        data = await request.json()
+        missao = session.query(CriancaMissao).filter(CriancaMissao.id_crianca == data['id_crianca'], CriancaMissao.id_missao == data['id_missao']).first()
+        missao.progresso_tarefa -= 1
+        session.commit()
+        return "Progresso da missão diminuido"
+    finally:
+        session.close()
 
 # Esta função deve retornar a tela da criança
 @router.get("/ir_para_tela_crianca/{id_crianca}")
