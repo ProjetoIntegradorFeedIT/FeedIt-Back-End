@@ -56,7 +56,7 @@ async def listar_criancas(id_responsavel: int):
                     "tamanho": select.tamanho,
                     "progresso_tarefa": m.progresso_tarefa,
                 }
-            criancas[crianca.nome_crianca].missa = dict_missao
+            criancas[crianca.nome_crianca].missao = dict_missao
             
         # return JSONResponse(content={"criancas": criancas}, status_code=200)
         return criancas
