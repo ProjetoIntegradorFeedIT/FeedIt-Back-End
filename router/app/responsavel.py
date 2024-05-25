@@ -5,7 +5,7 @@ import json
 import os
 # Import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Personalizacao, UsuarioCrianca, Crianca, CriancaMissao
+from database.sqlalchemy import Personalizacao, UsuarioCrianca, Crianca, CriancaMissao, Missao
 
 # Router
 router = APIRouter(
@@ -45,8 +45,19 @@ async def listar_criancas(id_responsavel: int):
         for id in id_criancas:
             crianca = session.query(Crianca).filter(Crianca.id_crianca == id).first()
             criancas[crianca.nome_crianca] = crianca
-            criancas[crianca.nome_crianca].missoes = session.query(CriancaMissao).filter(CriancaMissao.id_crianca == crianca.id_crianca).all()
-
+            missoes = session.query(CriancaMissao).filter(CriancaMissao.id_crianca == crianca.id_crianca).all()
+            dict_missao = {}
+            for m in missoes:
+                select = session.query(Missao).filter(Missao.id_missao == m.id_missao).first()
+                dict_missao[select.nome_missao] = {
+                    "tipo_missao": select.tipo_missao,
+                    "nome_missao": select.nome_missao,
+                    "valor": select.valor,
+                    "tamanho": select.tamanho,
+                    "progresso_tarefa": m.progresso_tarefa,
+                }
+            criancas[crianca.nome_crianca].missa = dict_missao
+            
         # return JSONResponse(content={"criancas": criancas}, status_code=200)
         return criancas
     
