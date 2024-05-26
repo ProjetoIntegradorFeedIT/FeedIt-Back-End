@@ -41,7 +41,9 @@ async def listar_criancas(id_responsavel: int):
         if not id_criancas:
             raise HTTPException(status_code=204, detail="Crianças não encontradas para este responsável")
         
+        quick_sort(id_criancas)
         criancas = {}
+        
         for id in id_criancas:
             crianca = session.query(Crianca).filter(Crianca.id_crianca == id).first()
             criancas[crianca.nome_crianca] = crianca
