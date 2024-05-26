@@ -81,12 +81,10 @@ async def login(request: Request):
             session.add(insert_token)
             session.commit()
             # Retornando a mensagem de sucesso
-            return JSONResponse(content={"message": "Login realizado com sucesso!",
-                                         "token": f"{token}",
+            return JSONResponse(content={"token": f"{token}",
                                          "tipo": f"{usuario.tipo_user}",
                                          "finalizou_crianca": f"{usuario.finalizou_crianca}",
-                                         "id_usuario": f"{usuario.id_user}"},
-                                         status_code=200)
+                                         "id_usuario": f"{usuario.id_user}"})
         # Verificando se o email está vazio
         if data['email'] == "":
             # Buscando a criança no banco
@@ -105,10 +103,9 @@ async def login(request: Request):
             session.add(insert_token)
             session.commit()
             # Retornando a mensagem de sucesso
-            return JSONResponse(content={"message": "Login realizado com sucesso!",
-                                         "token": f"{token}",
+            return JSONResponse(content={"token": f"{token}",
                                          "tipo": "C",
-                                         "id_crianca": f"{crianca.id_crianca}"}, status_code=200)
+                                         "id_crianca": f"{crianca.id_crianca}"})
     # Tratamento de exceção
     except Exception as e:
         return JSONResponse(status_code= 400, content={"message": "Erro ao realizar o login!", "error": str(e)})
