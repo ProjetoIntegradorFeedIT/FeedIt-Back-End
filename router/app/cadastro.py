@@ -154,6 +154,9 @@ async def cadastrar_usuario_crianca(request: Request):
         nova_relacao = UsuarioCrianca(id_user=data['id_user'], id_crianca=nova_crianca.id_crianca)
         session.add(nova_relacao)
         session.commit()
+        responsavel = session.query(Usuario).filter(Usuario.id_user == data['id_user']).first()
+        responsavel.finalizou_crianca = 1
+        session.commit()
         return JSONResponse(content={"message": "Usuário cadastrado com sucesso!"})
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao cadastrar o usuário!", "error": str(e)})
