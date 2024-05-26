@@ -1,13 +1,14 @@
 # Imports
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
-# import requests
+import requests
 import os
+import re
 from openai import OpenAI
 
 # import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Personalizacao
+from database.sqlalchemy import PetGrupoAlimento, Pet, GrupoAlimentos
 
 # Router
 router = APIRouter(
@@ -53,7 +54,58 @@ async def verificar_imagem(request: Request):
 
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
         response = response.json()
-        return response.get("choices")[0].get("message").get("content")
+
+        # resposnta para dicionario
+        resposta = response.get("choices")[0].get("message").get("content")
+        match = re.search(r"'grupo': '([^']*)'", resposta)
+        if match:
+            valor_grupo = match.group(1)
+
+            select_grupo = session.query(GrupoAlimentos).filter(GrupoAlimentos.grupo == valor_grupo).first()
+            select_pet = session.query(Pet).filter(Pet.id_crianca == data["id_crianca"]).first()
+            if (select_pet.alimentacao + select_grupo.alimentacao) > 100:
+                select_pet.alimentacao = 100
+                session.commit()
+            elif (select_pet.alimentacao + select_grupo.alimentacao) < -100:
+                select_pet.alimentacao = -100
+                session.commit()
+            else:
+                select_pet.alimentacao += select_grupo.alimentacao
+                session.commit()
+            if (select_pet.forca + select_grupo.forca) > 100:
+                select_pet.forca = 100
+                session.commit()
+            elif (select_pet.forca + select_grupo.forca) < -100:
+                select_pet.forca = -100
+                session.commit()
+            else:  
+                select_pet.forca += select_grupo.forca
+                session.commit()
+            if (select_pet.felicidade + select_grupo.felicidade) > 100:
+                select_pet.felicidade = 100
+                session.commit()
+            elif (select_pet.felicidade + select_grupo.felicidade) < -100:
+                select_pet.felicidade = -100
+                session.commit()
+            else:
+                select_pet.felicidade += select_grupo.felicidade
+                session.commit()
+            if (select_pet.energia + select_grupo.energia) > 100:
+                select_pet.energia = 100
+                session.commit()
+            elif (select_pet.energia + select_grupo.energia) < -100:
+                select_pet.energia = -100
+                session.commit()
+            else:
+                select_pet.energia += select_grupo.energia
+                session.commit()
+            insert = PetGrupoAlimento(id_pet=select_pet.id_pet, id_grupo=select_grupo.id)
+            session.add(insert)
+            session.commit()
+
+            return JSONResponse(content={"message": "Imagem verificada com sucesso!", "grupo": valor_grupo, "alimento": valor_grupo})
+        else:
+            return JSONResponse(content={"message": "Não foi possível verificar a imagem!"})
         
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao verificar a imagem!", "error": str(e)})

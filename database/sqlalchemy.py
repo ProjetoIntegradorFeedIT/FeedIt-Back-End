@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import DateTime, create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, TIMESTAMP, Date
@@ -138,14 +138,21 @@ class GrupoComidas(Base):
     pnt_felicidade = Column(Float)
     pnt_energia = Column(Float)
 
-class Status(Base):
-    __tablename__ = 'status'
-    id_alter = Column(Integer, primary_key=True, autoincrement=True)
-    atribuicao = Column(Date)
-    pnt_forca = Column(Float)
-    pnt_alimentacao = Column(Float)
-    pnt_felicidade = Column(Float)
-    pnt_energia = Column(Float)
+class GrupoAlimentos(Base):
+    __tablename__ = 'grupoAlimentos'
+    id = Column(Integer, primary_key=True, nullable=False)
+    grupo = Column(String(100), nullable=False)
+    alimentacao = Column(Float, nullable=False)
+    energia = Column(Float, nullable=False)
+    felicidade = Column(Float, nullable=False)
+    forca = Column(Float, nullable=False)
+
+class PetGrupoAlimento(Base):
+    __tablename__ = 'pet_grupoAlimento' 
+    id_alimento = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    id_pet = Column(Integer, ForeignKey('pets.id_pet'), nullable=False)
+    id_grupo = Column(Integer, ForeignKey('grupoAlimentos.id'), nullable=False)
+    consumo = Column(DateTime, default=func.current_timestamp(), nullable=False)
 
 def cria_tabelas():
     Base.metadata.create_all(engine)
