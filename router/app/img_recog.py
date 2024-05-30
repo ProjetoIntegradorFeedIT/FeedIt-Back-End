@@ -54,7 +54,7 @@ async def verificar_imagem(request: Request):
 
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
         response = response.json()
-        return response
+
         # resposnta para dicionario
         resposta = response.get("choices")[0].get("message").get("content")
         match = re.search(r"'grupo': '([^']*)'", resposta)
