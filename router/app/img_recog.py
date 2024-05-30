@@ -103,7 +103,9 @@ async def verificar_imagem(request: Request):
             session.add(insert)
             session.commit()
 
-            return JSONResponse(content={"message": "Imagem verificada com sucesso!", "grupo": valor_grupo, "alimento": valor_grupo})
+            valor_alimento = re.search(r"'comida': '([^']*)'", resposta).group(1)
+
+            return JSONResponse(content={"message": "Imagem verificada com sucesso!", "grupo": valor_grupo, "alimento": valor_alimento})
         else:
             return JSONResponse(content={"message": "Não foi possível verificar a imagem!"})
         
