@@ -9,7 +9,7 @@ from openai import OpenAI
 
 # import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import PetGrupoAlimento, Pet, GrupoAlimentos
+from database.sqlalchemy import PetGrupoAlimento, Pet, GrupoAlimentos, Crianca
 
 # Router
 router = APIRouter(
@@ -198,7 +198,9 @@ async def digestao(request: Request):
                         select_pet.forca -= select_grupo.forca
                     session.commit()
 
-        return
+        select_posDigestao = session.query(Pet).filter(Pet.id_pet == data['id_pet']).first()
+
+        return JSONResponse(content={"message": "Digestão realizada!", "alimentacao": select_posDigestao.alimentacao, "energia": select_posDigestao.energia, "felicidade": select_posDigestao.felicidade, "forca": select_posDigestao.forca})
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao digerir!", "error": str(e), "status_code": 500})
     finally:
