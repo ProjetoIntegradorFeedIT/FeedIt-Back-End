@@ -58,7 +58,7 @@ async def verificar_imagem(request: Request):
         # resposnta para dicionario
         resposta = response.get("choices")[0].get("message").get("content")
         match = re.search(r"'grupo': '([^']*)'", resposta)
-        if match:
+        if match and match.group(1) != "Não é um alimento":
             valor_grupo = match.group(1)
 
             select_grupo = session.query(GrupoAlimentos).filter(GrupoAlimentos.grupo == valor_grupo).first()
@@ -107,7 +107,7 @@ async def verificar_imagem(request: Request):
 
             return JSONResponse(content={"message": "Imagem verificada com sucesso!", "grupo": valor_grupo, "alimento": valor_alimento})
         else:
-            return JSONResponse(content={"message": "Não foi possível verificar a imagem!"})
+            return JSONResponse(content={"message": "Opa, parece que isso não é um alimento, se a gente se enganou conta ai pra gente o que que é isso!"})
         
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao verificar a imagem!", "error": str(e)})
