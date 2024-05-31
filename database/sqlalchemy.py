@@ -112,6 +112,7 @@ class CriancaMissao(Base):
     progresso_tarefa = Column(Integer)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
     prazo = Column(TIMESTAMP)
+    concluida = Column(Integer, default=0)
     crianca = relationship("Crianca", back_populates="tarefas")
     missao = relationship("Missao", back_populates="criancas")
 
