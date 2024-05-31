@@ -15,6 +15,7 @@ from router.app import login
 from router.app import profissional
 from router.app import responsavel
 from router.app import missoes_m
+from router.app import digestao
 
 # FastAPI
 app = FastAPI()
@@ -42,6 +43,7 @@ app.include_router(login.router)
 app.include_router(profissional.router)
 app.include_router(responsavel.router)
 app.include_router(missoes_m.router)
+app.include_router(digestao.router)
 
 # Teste de conexão
 @app.get("/")
