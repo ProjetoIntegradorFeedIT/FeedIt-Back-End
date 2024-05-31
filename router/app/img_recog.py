@@ -105,11 +105,11 @@ async def verificar_imagem(request: Request):
 
             valor_alimento = re.search(r"'comida': '([^']*)'", resposta).group(1)
 
-            return JSONResponse(content={"message": "Imagem verificada com sucesso!", "grupo": valor_grupo, "alimento": valor_alimento})
+            return JSONResponse(content={"status_code": 200, "message": "Imagem verificada com sucesso!", "grupo": valor_grupo, "alimento": valor_alimento})
         else:
-            return JSONResponse(content={"message": "Opa, parece que isso não é um alimento, se a gente se enganou conta ai pra gente o que que é isso!"})
+            return JSONResponse(content={"status_code": 304, "message": "Opa, parece que isso não é um alimento, se a gente se enganou conta ai pra gente o que que é isso!"})
         
     except Exception as e:
-        return JSONResponse(content={"message": "Erro ao verificar a imagem!", "error": str(e)})
+        return JSONResponse(content={"message": "Erro ao verificar a imagem!", "error": str(e), "status_code": 500})
     finally:
         session.close()
