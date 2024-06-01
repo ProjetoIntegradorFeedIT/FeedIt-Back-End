@@ -53,6 +53,7 @@ class UsuarioCrianca(Base):
     id_vinculacao = Column(Integer, primary_key=True, autoincrement=True)
     id_user = Column(Integer, ForeignKey('usuarios.id_user'))
     id_crianca = Column(Integer, ForeignKey('criancas.id_crianca'))
+    relacao = Column(String(1), nullable=False)
     user = relationship("Usuario", back_populates="criancas")
     crianca = relationship("Crianca", back_populates="usuarios")
 
@@ -154,6 +155,7 @@ class PetGrupoAlimento(Base):
     id_pet = Column(Integer, ForeignKey('pets.id_pet'), nullable=False)
     id_grupo = Column(Integer, ForeignKey('grupoAlimentos.id'), nullable=False)
     consumo = Column(DateTime, default=func.current_timestamp(), nullable=False)
+    digeriu = Column(Integer, default=0, nullable=False)
 
 def cria_tabelas():
     Base.metadata.create_all(engine)

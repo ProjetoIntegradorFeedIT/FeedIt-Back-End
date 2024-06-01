@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 import json
 import os
+
+from sqlalchemy import func
 # Import db connection
 from database.conexao import Conexao
-from database.sqlalchemy import Personalizacao
-
+from database.sqlalchemy import Usuario, UsuarioCrianca, Crianca, PetGrupoAlimento, GrupoAlimentos, Pet
 # Router
 router = APIRouter(
     prefix = "/profissional",
@@ -13,62 +14,56 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# Depois remove o comentário
-# O que fazer: Criar uma rota para listar todos os pacientes de um profissional
-# Como? - Criar um endpoint GET /profissional/{id}/pacientes que recebe o id do profissional
-# - Retornar um JSON com todos os pacientes do profissional
 @router.get("/{id_profissional}/pacientes")
 async def listar_pacientes(id_profissional: int):
     session = Conexao().session
     try:
-        # Aqui vem o seu código
-        return JSONResponse(content={"message": "Pacientes listados com sucesso!"})
+        select = session.query(Usuario).filter(Usuario.id_user == id_profissional).first()
+        if not select:
+            raise HTTPException(status_code=404, detail="Profissional não encontrado")
+        select_pacientes = session.query(UsuarioCrianca).filter(UsuarioCrianca.id_user == id_profissional, UsuarioCrianca.relacao == 'P').all()
+        pacientes = []
+        for paciente in select_pacientes:
+            select_crianca = session.query(Crianca).filter(Crianca.id_crianca == paciente.id_crianca).first()
+            select_responsavel = session.query(UsuarioCrianca).filter(UsuarioCrianca.id_crianca == paciente.id_crianca, UsuarioCrianca.relacao == 'F').first()
+            select_nome_responsavel = session.query(Usuario).filter(Usuario.id_user == select_responsavel.id_user).first()
+            pacientes.append({"id_crianca": select_crianca.id_crianca, "nome_crianca": select_crianca.nome_crianca, "nome_responsavel": select_nome_responsavel.nome_user})
+        return JSONResponse(content={"message": "Pacientes listados com sucesso!", "pacientes": pacientes})
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao listar os pacientes!", "error": str(e)})
     finally:
         session.close()
 
-# Depois remove o comentário
-# O que fazer: Criar uma rota para trazer os dados de um paciente de um profissional
-# Como? - Criar um endpoint GET /profissional/{id_profissional}/paciente/{id_paciente} que recebe o id do profissional e o id do paciente
-# - Retornar um JSON com os dados do paciente
-@router.get("/{id_profissional}/paciente/{id_paciente}")
-async def listar_paciente(id_profissional: int, id_paciente: int):
+@router.get("/paciente/{id_paciente}")
+async def listar_paciente(id_paciente: int):
     session = Conexao().session
     try:
-        # Aqui vem o seu código
-        return JSONResponse(content={"message": "Paciente listado com sucesso!"})
+        result = (session.query(GrupoAlimentos.grupo, func.count(PetGrupoAlimento.id_grupo))
+          .join(PetGrupoAlimento, GrupoAlimentos.id == PetGrupoAlimento.id_grupo)
+          .join(Pet, Pet.id_pet == PetGrupoAlimento.id_pet)
+          .filter(Pet.id_crianca == id_paciente)
+          .group_by(GrupoAlimentos.grupo)
+          .all())
+        dict_alimentos = {}
+        for grupo, count in result:
+            dict_alimentos[grupo] = count
+        
+        return JSONResponse(content={"message": "Infos do paciente listadas com sucesso!", "alimentos": dict_alimentos})
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao listar o paciente!", "error": str(e)})
     finally:
         session.close()
 
-# Depois remove o comentário
-# O que fazer: Criar uma rota para listar todos os responsáveis de um paciente
-# Como? - Criar um endpoint GET /profissional/{id_profissional}/paciente/{id_paciente}/responsaveis que recebe o id do profissional e o id do paciente
-# - Retornar um JSON com todos os responsáveis do paciente
-@router.get("/{id_profissional}/paciente/{id_paciente}/responsaveis")
-async def listar_responsaveis(id_profissional: int, id_paciente: int):
+@router.post("/vincula")
+async def vincular_paciente(request: Request):
     session = Conexao().session
     try:
-        # Aqui vem o seu código
-        return JSONResponse(content={"message": "Responsáveis listados com sucesso!"})
+        data = await request.json()
+        insert = UsuarioCrianca(id_user=data['id_profissional'], id_crianca=data['id_crianca'], relacao='P')
+        session.add(insert)
+        session.commit()
+        return JSONResponse(content={"message": "Paciente vinculado com sucesso!"})
     except Exception as e:
-        return JSONResponse(content={"message": "Erro ao listar os responsáveis!", "error": str(e)})
-    finally:
-        session.close()
-
-# Depois remove o comentário
-# O que fazer: Criar uma rota para trazer os dados para a montagem do gráfico de evolução de um paciente
-# Como? - Criar um endpoint GET /profissional/{id_profissional}/paciente/{id_paciente}/evolucao que recebe o id do profissional e o id do paciente
-# - Retornar um JSON com os dados para a montagem do gráfico
-@router.get("/{id_profissional}/paciente/{id_paciente}/evolucao")
-async def listar_evolucao(id_profissional: int, id_paciente: int):
-    session = Conexao().session
-    try:
-        # Aqui vem o seu código
-        return JSONResponse(content={"message": "Evolução listada com sucesso!"})
-    except Exception as e:
-        return JSONResponse(content={"message": "Erro ao listar a evolução!", "error": str(e)})
+        return JSONResponse(content={"message": "Erro ao vincular o paciente!", "error": str(e)})
     finally:
         session.close()

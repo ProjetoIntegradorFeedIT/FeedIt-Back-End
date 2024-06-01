@@ -151,7 +151,7 @@ async def cadastrar_usuario_crianca(request: Request):
         nova_crianca = Crianca(nome_crianca=data['nome'], senha=criptografar_senha(data['senha']))
         session.add(nova_crianca)
         session.commit()
-        nova_relacao = UsuarioCrianca(id_user=data['id_user'], id_crianca=nova_crianca.id_crianca)
+        nova_relacao = UsuarioCrianca(id_user=data['id_user'], id_crianca=nova_crianca.id_crianca, relacao='F')
         session.add(nova_relacao)
         session.commit()
         responsavel = session.query(Usuario).filter(Usuario.id_user == data['id_user']).first()

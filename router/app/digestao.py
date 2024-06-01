@@ -31,7 +31,7 @@ async def digestao(request: Request):
             diferenca = datetime.now() - alimento.consumo
             if select_grupo.grupo == 'Frutas':
                 if diferenca > timedelta(minutes=45):
-                    session.delete(alimento)
+                    select_estomago.digeriu = 1
                     session.commit()
                     if select_pet.energia - select_grupo.energia < 0:
                         select_pet.energia = 0
@@ -52,7 +52,7 @@ async def digestao(request: Request):
                     session.commit()
             elif select_grupo.grupo == 'Vegetais e folhas':
                 if diferenca > timedelta(minutes=90):
-                    session.delete(alimento)
+                    select_estomago.digeriu = 1
                     session.commit()
                     if select_pet.energia - select_grupo.energia < 0:
                         select_pet.energia = 0
@@ -73,7 +73,7 @@ async def digestao(request: Request):
                     session.commit()
             elif select_grupo.grupo == 'Carne e ovos':
                 if diferenca > timedelta(minutes=210):
-                    session.delete(alimento)
+                    select_estomago.digeriu = 1
                     session.commit()
                     if select_pet.energia - select_grupo.energia < 0:
                         select_pet.energia = 0
@@ -94,7 +94,7 @@ async def digestao(request: Request):
                     session.commit()
             elif select_grupo.grupo == 'Cereais, tubérculos, pão e raízes':
                 if diferenca > timedelta(minutes=150):
-                    session.delete(alimento)
+                    select_estomago.digeriu = 1
                     session.commit()
                     if select_pet.energia - select_grupo.energia < 0:
                         select_pet.energia = 0
@@ -115,7 +115,7 @@ async def digestao(request: Request):
                     session.commit()
             elif select_grupo.grupo == 'Legumes':
                 if diferenca > timedelta(minutes=90):
-                    session.delete(alimento)
+                    select_estomago.digeriu = 1
                     session.commit()
                     if select_pet.energia - select_grupo.energia < 0:
                         select_pet.energia = 0
@@ -136,7 +136,7 @@ async def digestao(request: Request):
                     session.commit()
             elif select_grupo.grupo == 'Fungos':
                 if diferenca > timedelta(minutes=90):
-                    session.delete(alimento)
+                    select_estomago.digeriu = 1
                     session.commit()
                     if select_pet.energia - select_grupo.energia < 0:
                         select_pet.energia = 0
@@ -157,7 +157,7 @@ async def digestao(request: Request):
                     session.commit()
             elif select_grupo.grupo == 'Leite e laticínios':
                 if diferenca > timedelta(minutes=150):
-                    session.delete(alimento)
+                    select_estomago.digeriu = 1
                     session.commit()
                     if select_pet.energia - select_grupo.energia < 0:
                         select_pet.energia = 0
@@ -178,7 +178,7 @@ async def digestao(request: Request):
                     session.commit()
             elif select_grupo.grupo == 'Doces, Petiscos':
                 if diferenca > timedelta(minutes=45):
-                    session.delete(alimento)
+                    select_estomago.digeriu = 1
                     session.commit()
                     if select_pet.energia - select_grupo.energia < 0:
                         select_pet.energia = 0
