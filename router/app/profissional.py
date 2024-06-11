@@ -14,6 +14,17 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+# QuickSort
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivo = arr[len(arr) // 2]
+    esq = [x for x in arr if x[1] > pivo[1] or (x[1] == pivo[1] and x[0] < pivo[0])]
+    meio = [x for x in arr if x == pivo]
+    dir = [x for x in arr if x[1] < pivo[1] or (x[1] == pivo[1] and x[0] > pivo[0])]
+    return quicksort(esq) + meio + quicksort(dir)
+# ------------------------------
+
 @router.get("/{id_profissional}/pacientes")
 async def listar_pacientes(id_profissional: int):
     session = Conexao().session
@@ -47,8 +58,12 @@ async def listar_paciente(id_paciente: int):
         dict_alimentos = {}
         for grupo, count in result:
             dict_alimentos[grupo] = count
+
+        alimentos_list = list(dict_alimentos.items())
+        lista_organizada = quicksort(alimentos_list)
+        dict_alimentos_organizado = {k: v for k, v in lista_organizada}
         
-        return JSONResponse(content={"message": "Infos do paciente listadas com sucesso!", "alimentos": dict_alimentos})
+        return JSONResponse(content={"message": "Infos do paciente listadas com sucesso!", "alimentos": dict_alimentos_organizado})
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao listar o paciente!", "error": str(e)})
     finally:
