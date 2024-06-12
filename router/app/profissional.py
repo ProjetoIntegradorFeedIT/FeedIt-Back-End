@@ -56,14 +56,16 @@ async def listar_paciente(id_paciente: int):
           .group_by(GrupoAlimentos.grupo)
           .all())
         dict_alimentos = {}
+        numero_alimentos = 0
         for grupo, count in result:
             dict_alimentos[grupo] = count
+            numero_alimentos += count
 
         alimentos_list = list(dict_alimentos.items())
         lista_organizada = quicksort(alimentos_list)
         dict_alimentos_organizado = {k: v for k, v in lista_organizada}
         
-        return JSONResponse(content={"message": "Infos do paciente listadas com sucesso!", "alimentos": dict_alimentos_organizado})
+        return JSONResponse(content={"message": "Infos do paciente listadas com sucesso!", "alimentos": dict_alimentos_organizado, "total": numero_alimentos})
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao listar o paciente!", "error": str(e)})
     finally:
