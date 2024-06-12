@@ -39,7 +39,7 @@ async def listar_pacientes(id_profissional: int):
             select_responsavel = session.query(UsuarioCrianca).filter(UsuarioCrianca.id_crianca == paciente.id_crianca, UsuarioCrianca.relacao == 'F').first()
             select_nome_responsavel = session.query(Usuario).filter(Usuario.id_user == select_responsavel.id_user).first()
             pacientes.append({"id_crianca": select_crianca.id_crianca, "nome_crianca": select_crianca.nome_crianca, "nome_responsavel": select_nome_responsavel.nome_user})
-        return JSONResponse(content={"message": "Pacientes listados com sucesso!", "pacientes": pacientes})
+        return JSONResponse(content={"message": "Pacientes listados com sucesso!", "pacientes": pacientes, "medico": select.nome_user})
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao listar os pacientes!", "error": str(e)})
     finally:
