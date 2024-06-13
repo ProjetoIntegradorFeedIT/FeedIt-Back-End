@@ -21,7 +21,7 @@ def xp(id_crianca):
     session = Conexao().session
     try:
         selec_crianca = session.query(Crianca).filter(Crianca.id_crianca == id_crianca).first()
-        if (selec_crianca.xp_atual + 100 > selec_crianca.xp_necessario):
+        if (selec_crianca.xp_atual + 100 >= selec_crianca.xp_necessario):
             selec_crianca.xp_atual = 0
             selec_crianca.xp_necessario += 100
             selec_crianca.nivel += 1
