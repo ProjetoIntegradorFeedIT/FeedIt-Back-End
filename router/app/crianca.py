@@ -140,7 +140,7 @@ async def personalizacao_pet(id_crianca: int):
     finally:
         session.close()
         
-            
+       
 
 # Atualizar personalização do Pet
 @router.post("/salvar_personalizacao_pet")
@@ -202,5 +202,24 @@ async def missao_pet(id_crianca: int):
         return dict_missao
     except Exception as e:
         return JSONResponse(content={"message": "Erro ao encontrar as missões do Pet!", "error": str(e)})
+    finally:
+        session.close()
+
+# Cria pet
+@router.post("/criar_pet")
+async def criar_pet(request: Request):
+    session = Conexao().session
+    try:
+        data = await request.json()
+        pet = Pet(
+            nome_pet = data["nome_pet"],
+            tipo_pet = data["tipo_pet"],
+            id_crianca = data["id_crianca"]
+        )
+        session.add(pet)
+        session.commit()
+        return JSONResponse(content={"message": "Pet criado com sucesso!"})
+    except Exception as e:
+        return JSONResponse(content={"message": "Erro ao criar o Pet!", "error": str(e)})
     finally:
         session.close()
