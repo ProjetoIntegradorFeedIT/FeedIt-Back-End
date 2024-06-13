@@ -26,6 +26,7 @@ async def digestao(request: Request):
 
         select_pet = session.query(Pet).filter(Pet.id_pet == data['id_pet']).first()
         select_estomago = session.query(PetGrupoAlimento).filter(PetGrupoAlimento.id_pet == data['id_pet']).all()
+        return select_estomago
         for alimento in select_estomago:
             select_grupo = session.query(GrupoAlimentos).filter(GrupoAlimentos.id == alimento.id_grupo).first()
             diferenca = datetime.now() - alimento.consumo
