@@ -214,7 +214,11 @@ async def criar_pet(request: Request):
         pet = Pet(
             nome_pet = data["nome_pet"],
             tipo_pet = data["tipo_pet"],
-            id_crianca = data["id_crianca"]
+            id_crianca = data["id_crianca"],
+            chapeu = 0,
+            roupa = 0,
+            cor = data["id_cor"],
+            fundo = 0
         )
         session.add(pet)
         session.commit()
